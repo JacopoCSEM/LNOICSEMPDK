@@ -31,8 +31,8 @@ edge_coupler_output2_put = edge_coupler.put(900, 400, -90)
 # connect with semi-autorouting strt-bend-strt (From Interconnect # Nazca cross_section)
 # directional coupler pin b1 and edge_coupler_output1
 cross_section.strt_bend_strt_p2p(directional_coupler_put.pin["b1"], edge_coupler_output1_put.pin["b0"]).put()
-# connect with semi-autorouting strt-euler2-strt (From CSEM) resonator pin b0 and edge_coupler_output2
-StrtEuler2Strt(cs_waveguide=cross_section, pin1=resonator_put.pin["b0"], pin2=edge_coupler_output2_put.pin["b0"]).put(resonator_put.pin["b0"])
+# connect with semi-autorouting strt-euler2-strt (From CSEM) resonator pin b0 and edge_coupler_output2 pin b0
+StrtEuler2Strt(cs_waveguide=cross_section, pin1=resonator_put.pin["b0"], pin2=edge_coupler_output2_put.pin["b0"]).put()
 
 # save in GDS
 nd.export_gds(filename="test.gds")

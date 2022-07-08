@@ -95,5 +95,5 @@ class StrtEuler2Strt:
             self.cs_waveguide.strt(length=np.abs(xya2[1] - xya1[1]) - euler2_length).put()
         return cell
 
-    def put(self, *args):
-        return self._cell.put(*args)
+    def put(self, *args, **kwargs):
+        return self._cell.put(self.pin1, *args, **kwargs)
