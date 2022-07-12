@@ -6,7 +6,7 @@ class CSEMLogo:
     number = 0
 
     def __init__(self, text_layer=None):
-        self.text_layer = text_layer if text_layer is not None else "lay125"
+        self.text_layer = text_layer if text_layer is not None else "lay201"
 
         # create the gds
         self._cell = self.create_gds()
@@ -41,7 +41,7 @@ class ELENALogo:
     number = 0
 
     def __init__(self, text_layer=None):
-        self.text_layer = text_layer if text_layer is not None else "lay125"
+        self.text_layer = text_layer if text_layer is not None else "lay201"
 
         # create the gds
         self._cell = self.create_gds()
@@ -78,12 +78,12 @@ class Border:
         self.chip_size_x = chip_size_x if chip_size_x is not None else 5000
         self.chip_size_y = chip_size_y if chip_size_y is not None else 5000
         self.extra_size = extra_size if extra_size is not None else 150.0
-        self.radius = radius if radius is not None else 200.0
+        self.radius = radius if radius is not None else 75
         self.number = number if number is not None else 25
         self.layer_border = layer_border if layer_border is not None else "lay1"
         self.text_bottom = text_bottom if text_bottom is not None else "text_bottom"
         self.text_top = text_top if text_top is not None else "text_top"
-        self.text_layer = text_layer if text_layer is not None else "lay200"
+        self.text_layer = text_layer if text_layer is not None else "lay201"
 
         # calculate parameter
         self.border_x = self.chip_size_x / 2 - self.radius
@@ -112,12 +112,13 @@ class Border:
 
             # add the logo of CSEM and ELENA logo
             Border.CSEM_logo.put(self.chip_size_x/2-self.radius-300, self.chip_size_y / 2 - self.text_offset - text_height/2, scale= 5)
-            Border.ELENA_logo.put(-(self.chip_size_x/2-self.radius-300), self.chip_size_y / 2 - self.text_offset - text_height/2, scale= 10)
+            Border.ELENA_logo.put(-(self.chip_size_x/2-self.radius-300), self.chip_size_y / 2 - self.text_offset - text_height/2 -15, scale= 10)
         return cell
 
     def put(self, *args, **kwargs):
         return self._cell.put(*args, **kwargs)
 
 
+# from LayerPDKCSEM import *
 # Border().put()
 # nd.export_gds(filename="test.gds")

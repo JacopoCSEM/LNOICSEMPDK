@@ -11,22 +11,23 @@ class Bend(Enum):
     ARC = 3
 
 
-def euler2_length_equation(angle, radius):
-    _fresnel = fresnel(np.sqrt(abs((angle/2) * np.pi / 180) * 2.0 / np.pi))
-    length = np.sqrt((np.power(_fresnel[0]*np.pi*radius, 2) + np.power(_fresnel[1]*np.pi*radius, 2)))
-    _angle = np.arctan(_fresnel[0]/_fresnel[1])
-    return length*np.sin(_angle) + length*np.sin(_angle*2+(angle/2) * np.pi / 180)
+def xy_euler2(cs, angle, radius):
+    euler2 = cs.euler2(angle=angle, radius=radius)
+    input_xya = euler2.pin["a0"].xya()
+    output_xya = euler2.pin["b0"].xya()
+    return output_xya[0]-input_xya[0], output_xya[1]-input_xya[1]
 
 
 class SBendEuler:
     cell_name = "SBendEuler"
     number = 0  # number of instant initiated
 
-    def __init__(self, cs_waveguide, offset, max_angle=None, radius=None):
+    def __init__(self, cs_waveguide, offset, max_angle=None, radius=None, arrow=False):
         self.cs_waveguide = cs_waveguide
         self.offset = offset
         self.radius = self.cs_waveguide.radius if radius is None else radius
         self.max_angle = max_angle if max_angle is not None else 90
+        self.arrow = arrow
         self.pin = {}
 
         # create the gds
@@ -35,24 +36,25 @@ class SBendEuler:
     def create_gds(self):
         SBendEuler.number += 1
         with nd.Cell(name=SBendEuler.cell_name+"_"+str(SBendEuler.number)) as cell:
-            euler2_length = euler2_length_equation(self.max_angle, self.radius)
-            if self.offset > 2*euler2_length:
-                euler1 = self.cs_waveguide.euler2(radius=self.radius, angle=self.max_angle, arrow=False).put()
-                self.cs_waveguide.strt((self.offset-2*euler2_length)/np.sin(np.radians(self.max_angle))).put()
-                euler2 = self.cs_waveguide.euler2(radius=self.radius, angle=self.max_angle, arrow=False).put("b0")
+            length_x, length_y = xy_euler2(self.cs_waveguide, self.max_angle, self.radius)
+            if self.offset > 2*length_y:
+                euler1 = self.cs_waveguide.euler2(radius=self.radius, angle=self.max_angle, arrow=self.arrow).put()
+                self.cs_waveguide.strt((self.offset-2*length_y)/np.sin(np.radians(self.max_angle))).put()
+                euler2 = self.cs_waveguide.euler2(radius=self.radius, angle=self.max_angle, arrow=self.arrow).put("b0")
             else:
                 # find minimum of euler
                 def minimize_euler_angle_equation(angle):
-                    return np.power(euler2_length_equation(angle, self.radius) - self.offset/2, 2)
+                    length_x, length_y = xy_euler2(self.cs_waveguide, angle, self.radius)
+                    return np.power(length_y - self.offset/2, 2)
 
                 if self.offset != 0:
                     _angle = minimize(minimize_euler_angle_equation, self.max_angle).x
 
-                    euler1 = self.cs_waveguide.euler2(angle=_angle, radius=self.radius, arrow=False).put()
-                    euler2 = self.cs_waveguide.euler2(angle=_angle, radius=self.radius, arrow=False).put("b0")
+                    euler1 = self.cs_waveguide.euler2(angle=_angle, radius=self.radius, arrow=self.arrow).put()
+                    euler2 = self.cs_waveguide.euler2(angle=_angle, radius=self.radius, arrow=self.arrow).put("b0")
                 else:
-                    euler1 = self.cs_waveguide.strt(length=0, arrow=False).put()
-                    euler2 = self.cs_waveguide.strt(length=0, arrow=False).put("b0")
+                    euler1 = self.cs_waveguide.strt(length=0, arrow=self.arrow).put()
+                    euler2 = self.cs_waveguide.strt(length=0, arrow=self.arrow).put("b0")
 
             # create pin
             self.pin["a0"] = nd.Pin('a0', pin=euler1.pin['a0'], width=0).put()
@@ -62,8 +64,8 @@ class SBendEuler:
     def put(self, *args, **kwargs):
         return self._cell.put(*args, **kwargs)
 
-
-# SBendEuler(cs["0.8"], 200).put()
+# from LayerPDKCSEM import *
+# SBendEuler(cs["0.8"], 200, arrow=True).put()
 # nd.export_gds(filename="test.gds")
 
 
@@ -84,15 +86,15 @@ class StrtEuler2Strt:
     def create_gds(self):
         StrtEuler2Strt.number += 1
         with nd.Cell(name=StrtEuler2Strt.cell_name+"_"+str(StrtEuler2Strt.number)) as cell:
-            euler2_length = euler2_length_equation(90, self.radius)
+            length_x, length_y = xy_euler2(self.cs_waveguide, 90, self.radius)
 
             xya1 = self.pin1.xya()
             xya2 = self.pin2.xya()
 
             # connect them
-            self.cs_waveguide.strt(length=np.abs(xya2[0] - xya1[0]) - euler2_length).put()
+            self.cs_waveguide.strt(length=np.abs(xya2[0] - xya1[0]) - length_y).put()
             self.cs_waveguide.euler2(radius=self.radius, angle=90).put()
-            self.cs_waveguide.strt(length=np.abs(xya2[1] - xya1[1]) - euler2_length).put()
+            self.cs_waveguide.strt(length=np.abs(xya2[1] - xya1[1]) - length_y).put()
         return cell
 
     def put(self, *args, **kwargs):

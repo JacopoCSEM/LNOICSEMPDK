@@ -22,7 +22,7 @@ straight_waveguide.put(directional_coupler_put.pin["b0"])
 
 # Add Resonator and put to direction coupler exit b1
 resonator = Resonator(cs_bus_waveguide=cross_section, cs_resonator_waveguide=cross_section, radius=150, gap=1)
-resonator_put = resonator.put()
+resonator_put = resonator.put(arrow=False)
 
 # put 2 edge couplers at position (850, 400, -90)
 edge_coupler_output1_put = edge_coupler.put(850, 400, -90)

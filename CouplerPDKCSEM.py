@@ -116,7 +116,7 @@ class DirectionalCoupler:
         self.length = length
         self.gap = gap
         self.spacing = spacing
-        self.radius = radius if radius is not None else 50
+        self.radius = radius if radius is not None else cs_waveguide.radius
         self.bend = bend if bend is not None else Bend.S_BEND
         self.max_angle = max_angle if max_angle is not None else 90  # only valid for euler and arc bend
 
@@ -134,7 +134,7 @@ class DirectionalCoupler:
             if self.bend is Bend.S_BEND:
                 bend = self.cs_waveguide.sbend(radius=self.radius, offset=offset, arrow=False, Amax=self.max_angle)
             elif self.bend is Bend.EULER:
-                bend = SBendEuler(self.cs_waveguide, offset, max_angle=self.max_angle)
+                bend = SBendEuler(self.cs_waveguide, offset, max_angle=self.max_angle, radius=self.radius)
             output2 = bend.put(waveguide_up.pin["b0"])
             input2 = bend.put(waveguide_up.pin["a0"], flip=True)
             output1 = bend.put(waveguide_down.pin["b0"], flip=True)
