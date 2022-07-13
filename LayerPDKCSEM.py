@@ -23,6 +23,7 @@ for _width in list(range(500, 1100, 100))+[1500, 2000, 2500]:
     nd.add_layer2xsection(xsection=str(_width), layer="lay123")
     cs[str(_width)] = nd.interconnects.Interconnect(xs=str(_width), radius=50, width=_width, layer="lay123")
 
+# cs["800"] -> cs["0.8"]
 # cs["0.8"].euler2(radius=30, angle=90).put(0, 0, 0)
 # # cs["0.8"].euler(radius=30, angle=45).put(0, 0, 0)
 # cs["0.8"].bend(radius=50, angle=90).put(0, 0, 0)
