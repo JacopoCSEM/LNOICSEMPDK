@@ -24,6 +24,6 @@ for _width in list(range(500, 1100, 100))+[1500, 2000, 2500]:
     cs[str(_width)] = nd.interconnects.Interconnect(xs=str(_width), radius=50, width=_width, layer="lay123")
 
 # cs["0.8"].euler2(radius=30, angle=90).put(0, 0, 0)
-# cs["0.8"].euler(radius=30, angle=45).put(0, 0, 0)
-# cs["0.8"].bend(radius=50).put()
+# # cs["0.8"].euler(radius=30, angle=45).put(0, 0, 0)
+# cs["0.8"].bend(radius=50, angle=90).put(0, 0, 0)
 # nd.export_gds(filename="test.gds")

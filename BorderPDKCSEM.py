@@ -120,5 +120,6 @@ class Border:
 
 
 # from LayerPDKCSEM import *
-# Border().put()
-# nd.export_gds(filename="test.gds")
+# for chip_size_x in [30000, 20000, 15000, 10000, 5000]:
+#     Border(chip_size_x=chip_size_x).put()
+#     nd.export_gds(filename="chip_"+str(chip_size_x)+".gds")
