@@ -22,12 +22,13 @@ class SBendEuler:
     cell_name = "SBendEuler"
     number = 0  # number of instant initiated
 
-    def __init__(self, cs_waveguide, offset, max_angle=None, radius=None, arrow=False):
+    def __init__(self, cs_waveguide, offset, max_angle=None, radius=None, arrow=False, length=None):
         self.cs_waveguide = cs_waveguide
         self.offset = offset
         self.radius = self.cs_waveguide.radius if radius is None else radius
         self.max_angle = max_angle if max_angle is not None else 90
         self.arrow = arrow
+        self.length = length
         self.pin = {}
 
         # create the gds
@@ -43,12 +44,20 @@ class SBendEuler:
                 euler2 = self.cs_waveguide.euler2(radius=self.radius, angle=self.max_angle, arrow=self.arrow).put("b0")
             else:
                 # find minimum of euler
-                def minimize_euler_angle_equation(angle):
+                def minimize_euler_angle_equation_spacing(angle):
                     length_x, length_y = xy_euler2(self.cs_waveguide, angle, self.radius)
                     return np.power(length_y - self.offset/2, 2)
 
+                def minimize_euler_angle_equation_spacing_length(angle, radius):
+                    length_x, length_y = xy_euler2(self.cs_waveguide, angle, radius)
+                    return np.power(length_y - self.offset/2, 2) + np.power(length_x - self.offset/2, 2)
+
                 if self.offset != 0:
-                    _angle = minimize(minimize_euler_angle_equation, self.max_angle).x
+                    if self.length is None:
+                        _angle = minimize(minimize_euler_angle_equation_spacing, self.max_angle).x
+                    else:
+                        # TODO
+                        _angle, _radius = minimize(minimize_euler_angle_equation_spacing_length, [self.max_angle, self.radius], method='Nelder-Mead').x
 
                     euler1 = self.cs_waveguide.euler2(angle=_angle, radius=self.radius, arrow=self.arrow).put()
                     euler2 = self.cs_waveguide.euler2(angle=_angle, radius=self.radius, arrow=self.arrow).put("b0")

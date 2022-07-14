@@ -63,7 +63,7 @@ class MMI:
     cell_name = "MMI"
     number = 0  # number of instant initiated
 
-    def __init__(self, cs_waveguide, length, width, width_tapper, length_tapper, gap, spacing=None, bend=None, max_angle=None):
+    def __init__(self, cs_waveguide, length, width, width_tapper, length_tapper, gap, spacing=None, bend=None, max_angle=None, radius=None):
         self.cs_waveguide = cs_waveguide
         self.length = length
         self.width = width
@@ -73,6 +73,7 @@ class MMI:
         self.spacing = spacing if spacing is not None else gap
         self.bend = bend if bend is not None else Bend.S_BEND
         self.max_angle = max_angle if max_angle is not None else 90
+        self.radius = self.cs_waveguide.radius if radius is not None else radius
 
         # create the gds
         self._cell = self.create_gds()
@@ -85,9 +86,9 @@ class MMI:
             tapper1 = self.cs_waveguide.taper(length=self.length_tapper, width1=self.width_tapper, width2=self.cs_waveguide.width, arrow=False).put(_MMI.pin["b0"].move(0, self.gap/2))
             tapper2 = self.cs_waveguide.taper(length=self.length_tapper, width1=self.width_tapper, width2=self.cs_waveguide.width, arrow=False).put(_MMI.pin["b0"].move(0, -self.gap / 2))
             if self.bend is Bend.S_BEND:
-                bend = self.cs_waveguide.sbend(offset=(self.spacing-self.gap)/2, Amax=self.max_angle, arrow=False)
+                bend = self.cs_waveguide.sbend(offset=(self.spacing-self.gap)/2, Amax=self.max_angle, arrow=False, radius=self.radius)
             elif self.bend is Bend.EULER:
-                bend = SBendEuler(self.cs_waveguide, (self.spacing - self.gap) / 2, max_angle=self.max_angle)
+                bend = SBendEuler(self.cs_waveguide, (self.spacing - self.gap) / 2, max_angle=self.max_angle, radius=self.radius)
             output2 = bend.put(tapper1.pin["b0"])
             output1 = bend.put(tapper2.pin["b0"], flip=True)
 
