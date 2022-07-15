@@ -1,6 +1,5 @@
 import nazca as nd
 from enum import *
-import numpy as np
 
 
 class EdgeCoupler(Enum):
@@ -30,10 +29,7 @@ class EdgeCouplerDoubleTapper:
 
         # calculate parameter
         # L / DELTAW > 50 -> L = DELTAW*50
-        self.waveguide_width = self.cs_waveguide.width
-        self.waveguide_layer = self.cs_waveguide.layer
-        self.length_tapper = np.abs(self.waveguide_width - 0.8)*100
-        self.length = self.length_front_extend/2+self.length1+self.length2+self.length3+self.length_back_extend+self.length_tapper
+        self.length = self.length_front_extend/2+self.length1+self.length2+self.length3+self.length_back_extend
 
         # create the gds
         self._cell = self.create_gds()
@@ -42,9 +38,8 @@ class EdgeCouplerDoubleTapper:
         EdgeCouplerDoubleTapper.number += 1
         with nd.Cell(name=EdgeCouplerDoubleTapper.cell_name+"_"+str(EdgeCouplerDoubleTapper.number)) as cell:
             # first waveguide
-            waveguide = nd.taper(length=self.length_tapper, width1=self.waveguide_width, width2=0.8, layer=self.waveguide_layer).put(-self.length_tapper, 0, 0)
-            nd.strt(length=self.length_back_extend+self.length3, width=0.8, layer=self.waveguide_layer).put()
-            nd.taper(length=self.length2, width1=0.8, width2=self.width_top_tapper, layer=self.waveguide_layer).put()
+            waveguide = self.cs_waveguide.strt(length=self.length_back_extend+self.length3, width=0.8).put(0, 0)
+            self.cs_waveguide.taper(length=self.length2, width1=0.8, width2=self.width_top_tapper).put()
 
             # second waveguide
             nd.strt(length=self.length_back_extend, width=self.width3, layer=self.layer_second_etch).put(0, 0)
@@ -66,7 +61,7 @@ class EdgeCouplerDoubleTapper:
 
 
 # from LayerPDKCSEM import *
-# EdgeCouplerDoubleTapper(cs["0.8"], 0.175, 3.8, 0.05, 100, 100, 20, width_opening=20).put()
+# EdgeCouplerDoubleTapper(cs["0.8"], 0.175, 3.8, 10, 0.05, 100, 100, 30).put()
 # nd.export_gds(filename="test.gds")
 
 

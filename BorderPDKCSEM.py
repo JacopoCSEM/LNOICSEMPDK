@@ -111,8 +111,8 @@ class Border:
             nd.Font('cousine').text(text=self.text_top, height=text_height, align='ct', layer=self.text_layer).put(0, self.chip_size_y / 2 - self.text_offset)
 
             # add the logo of CSEM and ELENA logo
-            # Border.CSEM_logo.put(self.chip_size_x/2-self.radius-300, self.chip_size_y / 2 - self.text_offset - text_height/2, scale= 5)
-            # Border.ELENA_logo.put(-(self.chip_size_x/2-self.radius-300), self.chip_size_y / 2 - self.text_offset - text_height/2 -15, scale= 10)
+            Border.CSEM_logo.put(self.chip_size_x/2-self.radius-300, self.chip_size_y / 2 - self.text_offset - text_height/2, scale= 5)
+            Border.ELENA_logo.put(-(self.chip_size_x/2-self.radius-300), self.chip_size_y / 2 - self.text_offset - text_height/2 -15, scale= 10)
         return cell
 
     def put(self, *args, **kwargs):
