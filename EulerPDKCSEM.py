@@ -1,7 +1,6 @@
 import nazca as nd
 import numpy as np
 from enum import Enum
-from scipy.special import fresnel
 from scipy.optimize import minimize
 
 
@@ -18,7 +17,7 @@ def xy_euler2(cs, angle, radius):
     return output_xya[0]-input_xya[0], output_xya[1]-input_xya[1]
 
 
-# TODO ADD SBENDEULER with given length and radius
+# TODO ADD SBENDEULER with given offset and length, for now oly offset
 class SBendEuler:
     cell_name = "SBendEuler"
     number = 0  # number of instant initiated
@@ -70,7 +69,6 @@ class SBendEuler:
 # nd.export_gds(filename="test.gds")
 
 
-# TODO add euler bend with angle different than 90
 class StrtEuler2Strt:
     cell_name = "StrtEuler2Strt"
     number = 0  # number of instant initiated
@@ -89,6 +87,7 @@ class StrtEuler2Strt:
         with nd.Cell(name=StrtEuler2Strt.cell_name+"_"+str(StrtEuler2Strt.number)) as cell:
             length_x, length_y = xy_euler2(self.cs_waveguide, 90, self.radius)
 
+            # calculate the euler full size
             xya1 = self.pin1.xya()
             xya2 = self.pin2.xya()
 

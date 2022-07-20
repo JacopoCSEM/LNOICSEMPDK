@@ -7,6 +7,7 @@ nd.add_layer(name='lay2', layer=2)  # EFF_AREA
 nd.add_layer(name='lay5', layer=5)  # ALMARK_PROTECT
 nd.add_layer(name='lay10', layer=10)  # COUPON_CUT
 nd.add_layer(name='lay25', layer=25)  # WG2_ACC
+nd.add_layer(name='lay30', layer=30)  # CLD_OPEN
 nd.add_layer(name='lay123', layer=123)  # WG1
 nd.add_layer(name='lay125', layer=125)  # TXT_LOGO
 nd.add_layer(name='lay130', layer=130)  # CLD_OPEN

@@ -6,8 +6,8 @@ from EdgeCouplerPDKCSEM import *
 cross_section = cs["0.8"]  # cross section already created, you can create yours (example in LayerPDKCSEM)
 
 # create the edge coupler (From CSEM)
-edge_coupler = EdgeCouplerDoubleTapper(cs_waveguide=cross_section, width1=0.175, width3=3.8, width_top_tapper=0.05,
-                                       length1=100, length2=100, length3=20)
+edge_coupler = EdgeCouplerDoubleTapper(cs_waveguide=cross_section, width1=0.175, width2=3.8, width3=10, width_top_tapper=0.05,
+                                       length1=100, length2=100, length3=30)
 
 # put the edge coupler with (0,0,0) which correspond  to (x, y, angle) as position
 edge_coupler.put(0, 0, 0)
@@ -23,16 +23,17 @@ straight_waveguide.put(directional_coupler_put.pin["b0"])
 # Add Resonator and put to direction coupler exit b1
 resonator = Resonator(cs_bus_waveguide=cross_section, cs_resonator_waveguide=cross_section, radius=150, gap=1)
 resonator_put = resonator.put(arrow=False)
+waveguide_straight = cross_section.strt(length=1000).put("a0")  # add a straight waveguide with length 1000
 
 # put 2 edge couplers at position (850, 400, -90)
 edge_coupler_output1_put = edge_coupler.put(850, 400, -90)
-edge_coupler_output2_put = edge_coupler.put(900, 400, -90)
+edge_coupler_output2_put = edge_coupler.put(4000, 400, -90)
 
-# connect with semi-autorouting strt-bend-strt (From Interconnect # Nazca cross_section)
+# ---- connect with semi-autorouting strt-bend-strt (From Interconnect # Nazca cross_section) -------
 # directional coupler pin b1 and edge_coupler_output1
 cross_section.strt_bend_strt_p2p(directional_coupler_put.pin["b1"], edge_coupler_output1_put.pin["b0"]).put()
-# connect with semi-autorouting strt-euler2-strt (From CSEM) resonator pin b0 and edge_coupler_output2 pin b0
-StrtEuler2Strt(cs_waveguide=cross_section, pin1=resonator_put.pin["b0"], pin2=edge_coupler_output2_put.pin["b0"]).put()
+# connect with semi-autorouting strt-euler2-strt (From CSEM) wavguide pin b0 and edge_coupler_output2 pin b0
+StrtEuler2Strt(cs_waveguide=cross_section, pin1=waveguide_straight.pin["b0"], pin2=edge_coupler_output2_put.pin["b0"]).put()
 
 # save in GDS
 nd.export_gds(filename="test.gds")

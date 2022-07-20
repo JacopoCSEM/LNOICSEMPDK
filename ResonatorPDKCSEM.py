@@ -19,7 +19,7 @@ class Resonator:
         self.text_layer = text_layer if text_layer is not None else "lay125"
         self.length_straight = length_straight if length_straight is not None else 0
         self.bend = bend if bend is not None else Bend.ARC
-        self.is_text_enabled = is_text_enabled if is_text_enabled is not None else True
+        self.is_text_enabled = is_text_enabled if is_text_enabled is not None else False
 
         # calculate new parameter
         self.width_bus_waveguide = self.cs_bus_waveguide.width
@@ -59,10 +59,12 @@ class Resonator:
 
             if self.is_text_enabled is True:
                 # add text to the middle to know that is the gap and radius
+                length_total = self.length_straight * 2 + resonator_waveguide_bend(angle=90, radius=self.radius).length_geo * 4
                 text = ""
                 text += "angle = " + str(self.angle) + " degree" if self.angle != 0 else ""
                 text += "\n gap = " + str(self.gap * 1000) + " nm"
                 text += "\n len_str = " + str(self.length_straight) + " um" if self.length_straight != 0 else ""
+                text += "\n len_tot = " + "{:.2f}".format(length_total) + " um"
                 nd.Font('cousine').text(text=text, height=self.radius / 8, align='cc', layer=self.text_layer).put(resonator.pin["b0"].move(0, self.radius, 90))
 
             # add pins for connectivity:

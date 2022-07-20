@@ -14,7 +14,7 @@ class YJunction:
     cell_name = "YJunction"
     number = 0  # number of instant initiated
 
-    def __init__(self, cs_waveguide, length, gap, spacing=None, bend=None, max_angle=90):
+    def __init__(self, cs_waveguide, length, gap, spacing=None, bend=None, max_angle=None, radius=None):
         self.cs_waveguide = cs_waveguide
         self.length = length
         self.gap = gap
@@ -23,6 +23,7 @@ class YJunction:
         self.spacing = spacing if spacing is not None else gap
         self.bend = bend if bend is not None else Bend.S_BEND
         self.max_angle = max_angle if max_angle is not None else 90
+        self.radius = self.cs_waveguide.radius if radius is not None else radius
 
         # create the gds
         self._cell = self.create_gds()
@@ -38,9 +39,9 @@ class YJunction:
             nd.Polygon(points=points2, layer=self.cs_waveguide.layer).put(0, 0, 0)
 
             if self.bend is Bend.S_BEND:
-                bend = self.cs_waveguide.sbend(offset=(self.spacing - self.gap) / 2, Amax=self.max_angle, arrow=False)
+                bend = self.cs_waveguide.sbend(offset=(self.spacing - self.gap) / 2, Amax=self.max_angle, radius=self.radius, arrow=False)
             elif self.bend is Bend.EULER:
-                bend = SBendEuler(self.cs_waveguide, (self.spacing - self.gap) / 2, max_angle=self.max_angle)
+                bend = SBendEuler(self.cs_waveguide, (self.spacing - self.gap) / 2, radius=self.radius, max_angle=self.max_angle)
             output2 = bend.put(self.length, self.gap/2)
             output1 = bend.put(self.length, -self.gap/2, flip=True)
 
@@ -111,15 +112,15 @@ class DirectionalCoupler:
     cell_name = "DirectionalCoupler"
     number = 0  # number of instant initiated
 
-    def __init__(self, cs_waveguide, length, gap, spacing, radius=None, bend=None, max_angle=None):
+    def __init__(self, cs_waveguide, length, gap, spacing, bend=None, max_angle=None, radius=None):
         self.cs_waveguide = cs_waveguide
         # self.cs_waveguide = nd.interconnects.Interconnect(xs=str(800), radius=50, width=800/1000)
         self.length = length
         self.gap = gap
         self.spacing = spacing
-        self.radius = radius if radius is not None else cs_waveguide.radius
         self.bend = bend if bend is not None else Bend.S_BEND
-        self.max_angle = max_angle if max_angle is not None else 90  # only valid for euler and arc bend
+        self.max_angle = max_angle if max_angle is not None else 90
+        self.radius = radius if radius is not None else cs_waveguide.radius
 
         # create the gds
         self._cell = self.create_gds()

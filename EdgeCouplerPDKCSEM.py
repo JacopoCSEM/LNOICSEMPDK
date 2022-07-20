@@ -28,7 +28,6 @@ class EdgeCouplerDoubleTapper:
         self.layer_second_etch = layer_second_etch if layer_second_etch is not None else "lay130"
 
         # calculate parameter
-        # L / DELTAW > 50 -> L = DELTAW*50
         self.length = self.length_front_extend/2+self.length1+self.length2+self.length3+self.length_back_extend
 
         # create the gds
@@ -38,8 +37,8 @@ class EdgeCouplerDoubleTapper:
         EdgeCouplerDoubleTapper.number += 1
         with nd.Cell(name=EdgeCouplerDoubleTapper.cell_name+"_"+str(EdgeCouplerDoubleTapper.number)) as cell:
             # first waveguide
-            waveguide = self.cs_waveguide.strt(length=self.length_back_extend+self.length3, width=0.8).put(0, 0)
-            self.cs_waveguide.taper(length=self.length2, width1=0.8, width2=self.width_top_tapper).put()
+            waveguide = self.cs_waveguide.strt(length=self.length_back_extend+self.length3).put(0, 0)
+            self.cs_waveguide.taper(length=self.length2, width2=self.width_top_tapper).put()
 
             # second waveguide
             nd.strt(length=self.length_back_extend, width=self.width3, layer=self.layer_second_etch).put(0, 0)
@@ -129,5 +128,6 @@ class EdgeCouplerNoneTapper:
     def put(self, *args, **kwargs):
         return self._cell.put(*args, **kwargs)
 
-# EdgeCouplerNoneTapper(cs["1000"], 200).put()
+# from LayerPDKCSEM import *
+# EdgeCouplerNoneTapper(cs["1.0"], 20).put()
 # nd.export_gds(filename="test.gds")

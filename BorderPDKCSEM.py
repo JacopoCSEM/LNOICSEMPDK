@@ -1,4 +1,5 @@
 import nazca as nd
+from enum import Enum
 
 
 class CSEMLogo:
@@ -74,7 +75,12 @@ class Border:
     CSEM_logo = CSEMLogo()
     ELENA_logo = ELENALogo()
 
-    def __init__(self, chip_size_x=None, chip_size_y=None, extra_size=None, radius=None, layer_border=None, number=None, text_bottom=None, text_top=None, text_layer=None):
+    class Position(Enum):
+        LEFT = 0
+        RIGHT = 1
+        NONE = 2
+
+    def __init__(self, chip_size_x=None, chip_size_y=None, extra_size=None, radius=None, layer_border=None, number=None, text_bottom=None, text_top=None, text_layer=None, elena_logo_position=None, csem_logo_position=None):
         self.chip_size_x = chip_size_x if chip_size_x is not None else 5000
         self.chip_size_y = chip_size_y if chip_size_y is not None else 5000
         self.extra_size = extra_size if extra_size is not None else 150.0
@@ -84,6 +90,8 @@ class Border:
         self.text_bottom = text_bottom if text_bottom is not None else "text_bottom"
         self.text_top = text_top if text_top is not None else "text_top"
         self.text_layer = text_layer if text_layer is not None else "lay201"
+        self.elena_logo_position = elena_logo_position if elena_logo_position is not None else Border.Position.NONE
+        self.csem_logo_position = csem_logo_position if csem_logo_position is not None else Border.Position.NONE
 
         # calculate parameter
         self.border_x = self.chip_size_x / 2 - self.radius
@@ -111,8 +119,20 @@ class Border:
             nd.Font('cousine').text(text=self.text_top, height=text_height, align='ct', layer=self.text_layer).put(0, self.chip_size_y / 2 - self.text_offset)
 
             # add the logo of CSEM and ELENA logo
-            Border.CSEM_logo.put(self.chip_size_x/2-self.radius-300, self.chip_size_y / 2 - self.text_offset - text_height/2, scale= 5)
-            Border.ELENA_logo.put(-(self.chip_size_x/2-self.radius-300), self.chip_size_y / 2 - self.text_offset - text_height/2 -15, scale= 10)
+            logos_dict = {"ELENA": {"logo": Border.ELENA_logo, "scale": 10, "y_position": self.chip_size_y / 2 - self.text_offset - text_height/2-15, "position": self.elena_logo_position}
+                          , "CSEM": {"logo": Border.CSEM_logo, "scale": 5, "y_position": self.chip_size_y / 2 - self.text_offset - text_height/2-45, "position": self.csem_logo_position}}
+
+            x_max = self.chip_size_x/2-self.radius-300
+            x_min = -(self.chip_size_x/2-self.radius-300)
+            step = 750
+            for key_logo in logos_dict.keys():
+                logo = logos_dict[key_logo]
+                if logo["position"] is Border.Position.RIGHT:
+                    logo["logo"].put(x_max, logo["y_position"], scale=logo["scale"])
+                    x_max -= step
+                elif logo["position"] is Border.Position.LEFT:
+                    logo["logo"].put(x_min, logo["y_position"], scale=logo["scale"])
+                    x_min += 600
         return cell
 
     def put(self, *args, **kwargs):
